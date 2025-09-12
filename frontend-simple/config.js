@@ -1,7 +1,7 @@
 // Configuración de la aplicación
 const CONFIG = {
     // URL base de la API del backend
-    API_BASE_URL: 'http://localhost:5001/api',
+    API_BASE_URL: 'https://backend-simple-x77e.onrender.com/api',
     
     // Otras configuraciones que podrían ser útiles
     APP_NAME: 'Sistema Comal',
