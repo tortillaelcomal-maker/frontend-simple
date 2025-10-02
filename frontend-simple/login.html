@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Sistema Comal</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #D2691E 0%, #FF6347 50%, #FFD700 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('img/LogoComal.jpg') center/cover;
+            opacity: 0.1;
+            z-index: -1;
+        }
+        .login-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(210, 105, 30, 0.3);
+            width: 100%;
+            max-width: 400px;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+        }
+        .login-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .logo-container {
+            margin-bottom: 1rem;
+        }
+        .logo-container img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 3px solid #D2691E;
+            box-shadow: 0 5px 15px rgba(210, 105, 30, 0.3);
+        }
+        .login-header h1 {
+            color: #D2691E;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+        .login-header p {
+            color: #8B4513;
+            font-weight: 500;
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #333;
+            font-weight: 500;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+        .form-group input:focus {
+            outline: none;
+            border-color: #D2691E;
+            box-shadow: 0 0 0 3px rgba(210, 105, 30, 0.1);
+        }
+        .login-btn {
+            width: 100%;
+            padding: 0.75rem;
+            background: linear-gradient(135deg, #D2691E 0%, #FF6347 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .login-btn:hover {
+            background: linear-gradient(135deg, #B8860B 0%, #CD5C5C 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(210, 105, 30, 0.4);
+        }
+        .register-link {
+            text-align: center;
+            margin-top: 1.5rem;
+        }
+        .register-link a {
+            color: #D2691E;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .register-link a:hover {
+            color: #B8860B;
+            text-decoration: underline;
+        }
+        .message {
+            padding: 0.75rem;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+        .message.success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .message.error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .demo-users {
+            margin-top: 20px;
+            padding: 15px;
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.1) 0%, rgba(210, 105, 30, 0.1) 100%);
+            border-radius: 12px;
+            font-size: 0.9rem;
+            border: 1px solid rgba(210, 105, 30, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-header">
+            <div class="logo-container">
+                <img src="img/LogoComal.jpg" alt="Logo Tortillería El Comal">
+            </div>
+            <h1>Tortillería El Comal</h1>
+            <p>Iniciar Sesión</p>
+        </div>
+
+        <div id="message"></div>
+
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Contraseña:</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            
+            <button type="submit" class="login-btn">
+                Iniciar Sesión
+            </button>
+        </form>
+        
+        <div class="register-link">
+            <p>¿No tienes cuenta? <a href="register.html">Regístrate aquí</a></p>
+        </div>
+
+        <div class="demo-users">
+            <strong>👥 Usuarios de Prueba</strong><br>
+            <strong>Administrador:</strong> admin@comal.com / admin123<br>
+            <em>Gestión de usuarios y reportes</em><br><br>
+            <strong>Repartidor:</strong> Crear cuenta nueva<br>
+            <em>Acceso a crear y gestionar rutas diarias</em>
+        </div>
+    </div>
+
+    <script src="config.js"></script>
+    <script>
+        const API_BASE = CONFIG.API_BASE_URL;
+
+        function mostrarMensaje(mensaje, tipo) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.innerHTML = `<div class="message ${tipo}">${mensaje}</div>`;
+            setTimeout(() => messageDiv.innerHTML = '', 5000);
+        }
+
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+
+            if (!email || !password) {
+                mostrarMensaje('Email y contraseña requeridos', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    localStorage.setItem('token', result.token);
+                    mostrarMensaje('Login exitoso', 'success');
+                    
+                    setTimeout(() => {
+                        if (result.user.rol === 'admin') {
+                            window.location.href = 'admin.html';
+                        } else {
+                            window.location.href = 'index.html';
+                        }
+                    }, 1000);
+                } else {
+                    mostrarMensaje(result.message || 'Error de login', 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                mostrarMensaje('Error de conexión', 'error');
+            }
+        });
+
+        // Check if already logged in
+        if (localStorage.getItem('token')) {
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+</html>

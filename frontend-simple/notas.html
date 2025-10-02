@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Block de Notas - Tortillería Comal</title>
+    <script src="config.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            text-align: center;
+        }
+
+        .header h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .controls {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            margin: 5px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+        }
+
+        .btn-back {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            color: #333;
+        }
+
+        .notas-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .nota-card {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border-left: 5px solid #667eea;
+            transition: all 0.3s ease;
+        }
+
+        .nota-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .nota-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .nota-titulo {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #333;
+            margin: 0;
+        }
+
+        .nota-fecha {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .nota-contenido {
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 15px;
+            white-space: pre-wrap;
+        }
+
+        .nota-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 10px;
+            border-top: 1px solid #eee;
+            font-size: 0.85em;
+            color: #888;
+        }
+
+        .nota-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 12px;
+            margin: 0;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background: white;
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 600px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #eee;
+        }
+
+        .modal-header h2 {
+            color: #333;
+            margin: 0;
+        }
+
+        .close {
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .close:hover {
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+
+        .empty-state h3 {
+            margin-bottom: 10px;
+            color: #888;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .message {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        @media (max-width: 768px) {
+            .nota-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .nota-meta {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .modal-content {
+                margin: 10% auto;
+                width: 95%;
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>📝 Block de Notas</h1>
+            <p>Gestiona tus notas y recordatorios</p>
+        </div>
+
+        <!-- Controls -->
+        <div class="controls">
+            <button class="btn btn-back" onclick="window.location.href='index.html'">← Volver al Sistema</button>
+            <button class="btn btn-success" onclick="abrirModalNota()">+ Nueva Nota</button>
+            <button class="btn" onclick="cargarNotas()">🔄 Actualizar</button>
+        </div>
+
+        <!-- Message Area -->
+        <div id="messageArea"></div>
+
+        <!-- Notas Container -->
+        <div class="notas-container">
+            <div id="notasContent">
+                <div class="loading">
+                    <p>Cargando notas...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Crear/Editar Nota -->
+    <div id="notaModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Nueva Nota</h2>
+                <span class="close" onclick="cerrarModal()">&times;</span>
+            </div>
+            <form id="notaForm">
+                <div class="form-group">
+                    <label for="notaTitulo">Título *</label>
+                    <input type="text" id="notaTitulo" name="titulo" required maxlength="100">
+                </div>
+                <div class="form-group">
+                    <label for="notaFecha">Fecha</label>
+                    <input type="date" id="notaFecha" name="fecha">
+                </div>
+                <div class="form-group">
+                    <label for="notaContenido">Contenido *</label>
+                    <textarea id="notaContenido" name="contenido" required maxlength="1000" placeholder="Escribe tu nota aquí..."></textarea>
+                </div>
+                <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                    <button type="button" class="btn" onclick="cerrarModal()">Cancelar</button>
+                    <button type="submit" class="btn btn-success">Guardar Nota</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let notaEditando = null;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            verificarAutenticacion();
+            cargarNotas();
+            
+            // Set today's date as default (using local timezone)
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = String(today.getMonth() + 1).padStart(2, '0');
+            const day = String(today.getDate()).padStart(2, '0');
+            document.getElementById('notaFecha').value = `${year}-${month}-${day}`;
+        });
+
+        // Authentication check
+        function verificarAutenticacion() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            try {
+                const payload = JSON.parse(atob(token.split('.')[1]));
+                if (payload.exp < Date.now() / 1000) {
+                    localStorage.removeItem('token');
+                    window.location.href = 'login.html';
+                    return;
+                }
+            } catch (error) {
+                localStorage.removeItem('token');
+                window.location.href = 'login.html';
+                return;
+            }
+        }
+
+        // Load notas
+        async function cargarNotas() {
+            try {
+                showMessage('Cargando notas...', 'info');
+                
+                const response = await fetch(`${CONFIG.API_BASE_URL}/notas`, {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    mostrarNotas(result.notas);
+                    clearMessage();
+                } else {
+                    showMessage('Error cargando notas: ' + result.message, 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showMessage('Error de conexión al cargar notas', 'error');
+            }
+        }
+
+        // Display notas
+        function mostrarNotas(notas) {
+            const container = document.getElementById('notasContent');
+            
+            if (!notas || notas.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <h3>📝 No hay notas</h3>
+                        <p>Crea tu primera nota haciendo clic en "Nueva Nota"</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const notasHTML = notas.map(nota => `
+                <div class="nota-card">
+                    <div class="nota-header">
+                        <h3 class="nota-titulo">${escapeHtml(nota.titulo)}</h3>
+                        <span class="nota-fecha">${formatearFecha(nota.fecha)}</span>
+                    </div>
+                    <div class="nota-contenido">${escapeHtml(nota.contenido)}</div>
+                    <div class="nota-meta">
+                        <span>Por: ${escapeHtml(nota.nombreUsuario || 'Usuario')}</span>
+                        <div class="nota-actions">
+                            <button class="btn btn-small" onclick="editarNota('${nota._id}')">✏️ Editar</button>
+                            <button class="btn btn-danger btn-small" onclick="eliminarNota('${nota._id}', '${escapeHtml(nota.titulo)}')">🗑️ Eliminar</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+            container.innerHTML = notasHTML;
+        }
+
+        // Open modal
+        function abrirModalNota() {
+            notaEditando = null;
+            document.getElementById('modalTitle').textContent = 'Nueva Nota';
+            document.getElementById('notaForm').reset();
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = String(today.getMonth() + 1).padStart(2, '0');
+            const day = String(today.getDate()).padStart(2, '0');
+            document.getElementById('notaFecha').value = `${year}-${month}-${day}`;
+            document.getElementById('notaModal').style.display = 'block';
+        }
+
+        // Edit nota
+        async function editarNota(notaId) {
+            try {
+                const response = await fetch(`${CONFIG.API_BASE_URL}/notas`, {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    const nota = result.notas.find(n => n._id === notaId);
+                    if (nota) {
+                        notaEditando = notaId;
+                        document.getElementById('modalTitle').textContent = 'Editar Nota';
+                        document.getElementById('notaTitulo').value = nota.titulo;
+                        document.getElementById('notaContenido').value = nota.contenido;
+                        const fechaNota = new Date(nota.fecha);
+                        const year = fechaNota.getFullYear();
+                        const month = String(fechaNota.getMonth() + 1).padStart(2, '0');
+                        const day = String(fechaNota.getDate()).padStart(2, '0');
+                        document.getElementById('notaFecha').value = `${year}-${month}-${day}`;
+                        document.getElementById('notaModal').style.display = 'block';
+                    }
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showMessage('Error cargando nota para editar', 'error');
+            }
+        }
+
+        // Delete nota
+        async function eliminarNota(notaId, titulo) {
+            if (!confirm(`¿Estás seguro de que quieres eliminar la nota "${titulo}"?`)) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`${CONFIG.API_BASE_URL}/notas/${notaId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    showMessage('Nota eliminada exitosamente', 'success');
+                    cargarNotas();
+                } else {
+                    showMessage('Error eliminando nota: ' + result.message, 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showMessage('Error de conexión al eliminar nota', 'error');
+            }
+        }
+
+        // Close modal
+        function cerrarModal() {
+            document.getElementById('notaModal').style.display = 'none';
+            notaEditando = null;
+        }
+
+        // Form submit
+        document.getElementById('notaForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            // Corregir fecha para evitar problemas de zona horaria
+            const fechaInput = formData.get('fecha');
+            const fechaCorregida = fechaInput ? new Date(fechaInput + 'T12:00:00') : new Date();
+            
+            const notaData = {
+                titulo: formData.get('titulo').trim(),
+                contenido: formData.get('contenido').trim(),
+                fecha: fechaCorregida.toISOString()
+            };
+
+            if (!notaData.titulo || !notaData.contenido) {
+                showMessage('Título y contenido son requeridos', 'error');
+                return;
+            }
+
+            try {
+                const url = notaEditando 
+                    ? `${CONFIG.API_BASE_URL}/notas/${notaEditando}`
+                    : `${CONFIG.API_BASE_URL}/notas`;
+                
+                const method = notaEditando ? 'PUT' : 'POST';
+
+                const response = await fetch(url, {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    },
+                    body: JSON.stringify(notaData)
+                });
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    showMessage(result.message, 'success');
+                    cerrarModal();
+                    cargarNotas();
+                } else {
+                    showMessage('Error: ' + result.message, 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showMessage('Error de conexión al guardar nota', 'error');
+            }
+        });
+
+        // Utility functions
+        function formatearFecha(fecha) {
+            const date = new Date(fecha);
+            return date.toLocaleDateString('es-ES', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function showMessage(message, type = 'info') {
+            const messageArea = document.getElementById('messageArea');
+            const className = type === 'error' ? 'error' : type === 'success' ? 'success' : 'info';
+            messageArea.innerHTML = `<div class="message ${className}">${message}</div>`;
+            
+            if (type === 'success') {
+                setTimeout(clearMessage, 3000);
+            }
+        }
+
+        function clearMessage() {
+            document.getElementById('messageArea').innerHTML = '';
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('notaModal');
+            if (event.target === modal) {
+                cerrarModal();
+            }
+        }
+    </script>
+</body>
+</html>
